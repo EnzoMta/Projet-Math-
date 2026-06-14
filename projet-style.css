@@ -640,6 +640,38 @@
 .compare-canvas-wrap {
   min-height: 320px;
 }
+.cmp-equation {
+  text-align: center;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  color: var(--muted, #8b8fa3);
+  min-height: 24px;
+}
+.cmp-info {
+  text-align: center;
+  padding: 6px 0;
+  font-size: 0.8rem;
+  color: var(--accent, #6c63ff);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════
+   ÉPICYCLES DE FOURIER
+   ══════════════════════════════════════════ */
+.fourier-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+#fourierCanvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  border-radius: 12px;
+  background: var(--card, #222632);
+}
 
 /* ══════════════════════════════════════════
    RESPONSIVE

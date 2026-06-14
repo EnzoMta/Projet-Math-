@@ -590,9 +590,11 @@
                 style="display: none" />
             </div>
           </div>
+          <div class="cmp-equation" id="cmpEquationLeft"></div>
           <div class="canvas-wrapper compare-canvas-wrap">
             <canvas class="compare-canvas" id="cmpCanvasLeft"></canvas>
           </div>
+          <div class="cmp-info" id="cmpInfoLeft"></div>
         </div>
         <!-- Côté droit -->
         <div class="compare-side" id="compareRight">
@@ -637,9 +639,11 @@
                 style="display: none" />
             </div>
           </div>
+          <div class="cmp-equation" id="cmpEquationRight"></div>
           <div class="canvas-wrapper compare-canvas-wrap">
             <canvas class="compare-canvas" id="cmpCanvasRight"></canvas>
           </div>
+          <div class="cmp-info" id="cmpInfoRight"></div>
         </div>
       </div>
       <div
@@ -647,6 +651,27 @@
         style="justify-content: center; margin-top: 0.8rem">
         <button class="btn btn-primary" id="btnCompareAnimate">▶ Animer</button>
         <button class="btn btn-outline" id="btnCompareReset">↺ Reset</button>
+      </div>
+    </section>
+
+    <!-- ═══════ ÉPICYCLES DE FOURIER ═══════ -->
+    <section class="container" id="fourier">
+      <h2 class="section-title">Épicycles de Fourier</h2>
+      <p style="color: var(--muted); margin-bottom: 1rem;">
+        Dessinez une forme fermée à la souris. Le programme la reconstruit avec une série
+        de cercles tournants — c'est la transformée de Fourier appliquée à votre tracé !
+      </p>
+      <div class="fourier-controls">
+        <button class="btn btn-primary" id="btnFourierDraw">✏️ Mode dessin</button>
+        <button class="btn btn-outline" id="btnFourierPlay">▶ Lancer</button>
+        <button class="btn btn-outline" id="btnFourierClear">✕ Effacer</button>
+        <label style="display:flex; align-items:center; gap:8px; color: var(--muted);">
+          Cercles : <span id="fourierCount">0</span>
+          <input type="range" id="fourierEpicycles" min="1" max="100" value="50" style="width:140px;">
+        </label>
+      </div>
+      <div class="canvas-wrapper" style="height: 500px;">
+        <canvas id="fourierCanvas"></canvas>
       </div>
     </section>
 
@@ -658,6 +683,7 @@
     <!-- ═══════ SCRIPTS ═══════ -->
     <!-- math.js pour parsing sécurisé des expressions utilisateurs -->
     <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/dist/math.min.js"></script>
+    <script src="fourier.js"></script>
     <script src="projet-script.js" type="module"></script>
   </body>
 </html>
