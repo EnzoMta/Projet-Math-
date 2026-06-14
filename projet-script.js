@@ -312,10 +312,17 @@ function preprocessExpr(input) {
   return s;
 }
 
+function getMathLib() {
+  const g = /** @type {any} */ (typeof globalThis !== "undefined" ? globalThis : window);
+  const m = (typeof math !== "undefined" ? math : undefined) || g["math"];
+  return m && typeof m.parse === "function" ? m : null;
+}
+
 function compilePolarExpression(exprStr) {
-  if (typeof math === "undefined") return { err: "mathjs not loaded" };
+  const mathLib = getMathLib();
+  if (!mathLib) return { err: "mathjs not loaded — vérifiez votre connexion" };
   try {
-    const node = math.parse(exprStr);
+    const node = mathLib.parse(exprStr);
     const code = node.compile();
     return { compiled: code };
   } catch (e) {
@@ -324,10 +331,11 @@ function compilePolarExpression(exprStr) {
 }
 
 function compileParamExpressions(xStr, yStr) {
-  if (typeof math === "undefined") return { err: "mathjs not loaded" };
+  const mathLib = getMathLib();
+  if (!mathLib) return { err: "mathjs not loaded — vérifiez votre connexion" };
   try {
-    const nx = math.parse(xStr);
-    const ny = math.parse(yStr);
+    const nx = mathLib.parse(xStr);
+    const ny = mathLib.parse(yStr);
     const cx = nx.compile();
     const cy = ny.compile();
     return { compiledX: cx, compiledY: cy };
@@ -806,9 +814,12 @@ function draw2d() {
     for (let i = 1; i < points.length; i++) {
       ctx2d.lineTo(points[i].x, points[i].y);
     }
+    ctx2d.shadowColor = "#6c63ff";
+    ctx2d.shadowBlur = 12;
     ctx2d.strokeStyle = "#6c63ff";
     ctx2d.lineWidth = 2.5;
     ctx2d.stroke();
+    ctx2d.shadowBlur = 0;
   }
 
   // Point animé
@@ -1264,9 +1275,12 @@ function drawCompareSide(side) {
     ctx.moveTo(points[0].x, points[0].y);
     for (let i = 1; i < points.length; i++)
       ctx.lineTo(points[i].x, points[i].y);
-    ctx.strokeStyle = "#6c63ff";
+    ctx.shadowColor = side === "left" ? "#6c63ff" : "#00cfc8";
+    ctx.shadowBlur = 10;
+    ctx.strokeStyle = side === "left" ? "#6c63ff" : "#00cfc8";
     ctx.lineWidth = 2;
     ctx.stroke();
+    ctx.shadowBlur = 0;
   }
 
   // [FIX] Dessiner le point animé dans le comparateur
@@ -1316,6 +1330,29 @@ function drawCompareSide(side) {
       ctx.lineWidth = 2;
       ctx.stroke();
     }
+  }
+
+  const eqEl = document.getElementById(side === "left" ? "cmpEquationLeft" : "cmpEquationRight");
+  if (eqEl && typeof katex !== "undefined") {
+    const tex = getCurve2dEquation(config.type, config.a, config.b);
+    try { katex.render(tex, eqEl, { displayMode: false, throwOnError: false }); }
+    catch (e) { eqEl.textContent = tex; }
+  }
+
+  const infoEl = document.getElementById(side === "left" ? "cmpInfoLeft" : "cmpInfoRight");
+  if (infoEl) {
+    let info = "";
+    if (config.type === "rosace") {
+      const petals = config.b % 2 === 1 ? config.b : config.b * 2;
+      info = petals + " pétales";
+    } else if (config.type === "cardioide") {
+      info = "1 boucle en forme de cœur";
+    } else if (config.type === "spirale") {
+      info = "spirale, " + config.b + " tours";
+    } else if (config.type === "lissajous") {
+      info = "rapport a/b = " + config.a + "/" + config.b;
+    }
+    infoEl.textContent = info;
   }
 }
 
@@ -1700,6 +1737,8 @@ function init3d() {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 1.0;
 
   gridHelper = new THREE.GridHelper(12, 12, 0x2e3348, 0x2e334844);
   scene.add(gridHelper);
@@ -1707,6 +1746,9 @@ function init3d() {
   addAxes3d();
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  dirLight.position.set(5, 8, 5);
+  scene.add(dirLight);
 
   update3dCurve();
   render3dLoop();
@@ -1997,12 +2039,16 @@ function update3dCurve() {
   }
 
   const points = getCurve3dPoints(type, a, b, c, null);
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const material = new THREE.LineBasicMaterial({
+  const curvePath = new THREE.CatmullRomCurve3(points);
+  const geometry = new THREE.TubeGeometry(curvePath, 600, 0.06, 12, false);
+  const material = new THREE.MeshStandardMaterial({
     color: 0x6c63ff,
-    linewidth: 2,
+    roughness: 0.4,
+    metalness: 0.3,
+    emissive: 0x6c63ff,
+    emissiveIntensity: 0.2,
   });
-  curveLine3d = new THREE.Line(geometry, material);
+  curveLine3d = new THREE.Mesh(geometry, material);
   scene.add(curveLine3d);
 
   const sphereGeo = new THREE.SphereGeometry(0.15, 16, 16);
