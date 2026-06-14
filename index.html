@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cours de Mathématiques</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ═══════ NAVBAR ═══════ -->
+    <nav>
+      <div class="nav-logo">Ω MathLab Ω</div>
+      <button class="burger" id="burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="active">Accueil</a></li>
+        <li><a href="#cours">Cours</a></li>
+        <li><a href="projet.html">Projets</a></li>
+      </ul>
+    </nav>
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero">
+      <h1>Decode Cours de Mathématiques</h1>
+      <p>Explorez les mathématiques à travers des expériences interactives.</p>
+    </section>
+
+    <!-- ═══════ EXPÉRIENCES ═══════ -->
+    <section class="container" id="experiences">
+      <h2 class="section-title">Expériences</h2>
+      <div class="xp-grid">
+        <!-- Carte 1 : Pile ou Face -->
+        <div class="xp-card" onclick="openCoinModal()">
+          <span class="icon">🪙</span>
+          <h3>Pile ou Face</h3>
+          <p>
+            Lancez une pièce 1, 10, 100 ou 1 000 fois et observez la convergence
+            vers ½.
+          </p>
+        </div>
+
+        <!-- Carte 2 : Lancer de Dé -->
+        <div class="xp-card" onclick="openDiceModal()">
+          <span class="icon">🎲</span>
+          <h3>Lancer de Dé</h3>
+          <p>
+            Lancez un dé et visualisez la distribution des résultats sur 6
+            faces.
+          </p>
+        </div>
+
+        <!-- Carte 3 : Vecteur & Mouvement -->
+        <div class="xp-card" onclick="openVectorModal()">
+          <span class="icon">➡️</span>
+          <h3>Vecteur & Mouvement</h3>
+          <p>
+            Créez un point avec une position et une vélocité, et observez son
+            déplacement vectoriel.
+          </p>
+        </div>
+
+        <!-- Carte 4 : Structure relationnelle -->
+        <div class="xp-card" onclick="openRelModal()">
+          <span class="icon">🔗</span>
+          <h3>Structure relationnelle</h3>
+          <p>Affiche 3 nœuds liés: cercles, labels et connexions (lignes).</p>
+        </div>
+      </div>
+
+      <!-- ═══════ MODAL : STRUCTURE RELATIONNELLE (séparé) ═══════ -->
+      <div class="overlay" id="relOverlay">
+        <div class="modal modal-wide">
+          <div class="modal-header">
+            <h2>🔗 Structure relationnelle</h2>
+            <button class="modal-close" onclick="closeRelModal()">
+              &times;
+            </button>
+          </div>
+
+          <div class="rel-controls">
+            <div class="rel-actions">
+              <button class="btn btn-primary" onclick="addRandomNode()">
+                ＋ Ajouter nœud aléatoire
+              </button>
+              <button
+                class="btn btn-outline"
+                id="relModeBtn"
+                onclick="toggleRelMode()">
+                Mode : déplacer
+              </button>
+              <label
+                class="btn btn-outline"
+                style="
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  padding: 8px 10px;
+                ">
+                <input
+                  type="checkbox"
+                  id="relDirected"
+                  onchange="renderRelMatrix()" />
+                Dirigé
+              </label>
+              <button class="btn-reset" onclick="clearRelEdges()">
+                ↺ Effacer arêtes
+              </button>
+            </div>
+            <div class="rel-info">
+              Cliquez pour sélectionner / créer arêtes en mode « arête »;
+              double-clic pour renommer.
+            </div>
+          </div>
+
+          <div style="margin-top: 12px">
+            <canvas
+              id="relCanvas"
+              class="rel-canvas"
+              width="800"
+              height="420"></canvas>
+          </div>
+
+          <div class="rel-matrix" id="relMatrix" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ MODAL : PILE OU FACE ═══════ -->
+    <div class="overlay" id="coinOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>🪙 Pile ou Face</h2>
+          <button class="modal-close" onclick="closeCoinModal()">
+            &times;
+          </button>
+        </div>
+        <div class="coin-area">
+          <div class="coin-wrapper">
+            <div class="coin" id="coin">
+              <div class="coin-face coin-heads">PILE</div>
+              <div class="coin-face coin-tails">FACE</div>
+            </div>
+          </div>
+
+          <!-- ═══════ MODAL : STRUCTURE RELATIONNELLE ═══════ -->
+
+          <span id="lastCoinResult" class="last-result"
+            >Cliquez pour lancer</span
+          >
+        </div>
+        <div class="controls">
+          <button
+            class="btn btn-outline active-btn"
+            data-n="1"
+            onclick="selectCoinN(this)">
+            1 lancer
+          </button>
+          <button
+            class="btn btn-outline"
+            data-n="10"
+            onclick="selectCoinN(this)">
+            10 lancers
+          </button>
+          <button
+            class="btn btn-outline"
+            data-n="100"
+            onclick="selectCoinN(this)">
+            100 lancers
+          </button>
+          <button
+            class="btn btn-outline"
+            data-n="1000"
+            onclick="selectCoinN(this)">
+            1 000 lancers
+          </button>
+          <button class="btn btn-primary" onclick="flipCoins()">
+            🚀 Lancer
+          </button>
+        </div>
+        <div class="results-row">
+          <div class="result-box">
+            <div class="label">Pile</div>
+            <div class="value pile-color" id="pileCount">0</div>
+            <div class="pct" id="pilePct">0 %</div>
+          </div>
+          <div class="result-box">
+            <div class="label">Face</div>
+            <div class="value face-color" id="faceCount">0</div>
+            <div class="pct" id="facePct">0 %</div>
+          </div>
+        </div>
+        <div class="total-info">
+          Total : <strong id="coinTotal">0</strong> lancers
+        </div>
+        <div class="chart-container"><canvas id="coinChart"></canvas></div>
+        <div class="reset-row">
+          <button class="btn-reset" onclick="resetCoin()">
+            ↺ Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ MODAL : LANCER DE DÉ ═══════ -->
+    <div class="overlay" id="diceOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>🎲 Lancer de Dé</h2>
+          <button class="modal-close" onclick="closeDiceModal()">
+            &times;
+          </button>
+        </div>
+        <div class="dice-area">
+          <div class="dice" id="dice">
+            <span class="dice-val" id="diceVal">?</span>
+          </div>
+          <span id="lastDiceResult" class="last-result"
+            >Cliquez pour lancer</span
+          >
+        </div>
+        <div class="controls">
+          <button
+            class="btn btn-outline active-btn"
+            data-dn="1"
+            onclick="selectDiceN(this)">
+            1 lancer
+          </button>
+          <button
+            class="btn btn-outline"
+            data-dn="10"
+            onclick="selectDiceN(this)">
+            10 lancers
+          </button>
+          <button
+            class="btn btn-outline"
+            data-dn="100"
+            onclick="selectDiceN(this)">
+            100 lancers
+          </button>
+          <button
+            class="btn btn-outline"
+            data-dn="1000"
+            onclick="selectDiceN(this)">
+            1 000 lancers
+          </button>
+          <button class="btn btn-primary" onclick="rollDice()">
+            🚀 Lancer
+          </button>
+        </div>
+        <div class="dice-results" id="diceResults">
+          <div class="dice-bar-row" data-face="1">
+            <span class="dice-face-label">⚀ 1</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar1"></div>
+            </div>
+            <span class="dice-bar-count" id="count1">0</span>
+          </div>
+          <div class="dice-bar-row" data-face="2">
+            <span class="dice-face-label">⚁ 2</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar2"></div>
+            </div>
+            <span class="dice-bar-count" id="count2">0</span>
+          </div>
+          <div class="dice-bar-row" data-face="3">
+            <span class="dice-face-label">⚂ 3</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar3"></div>
+            </div>
+            <span class="dice-bar-count" id="count3">0</span>
+          </div>
+          <div class="dice-bar-row" data-face="4">
+            <span class="dice-face-label">⚃ 4</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar4"></div>
+            </div>
+            <span class="dice-bar-count" id="count4">0</span>
+          </div>
+          <div class="dice-bar-row" data-face="5">
+            <span class="dice-face-label">⚄ 5</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar5"></div>
+            </div>
+            <span class="dice-bar-count" id="count5">0</span>
+          </div>
+          <div class="dice-bar-row" data-face="6">
+            <span class="dice-face-label">⚅ 6</span>
+            <div class="dice-bar-track">
+              <div class="dice-bar-fill" id="bar6"></div>
+            </div>
+            <span class="dice-bar-count" id="count6">0</span>
+          </div>
+        </div>
+        <div class="total-info">
+          Total : <strong id="diceTotal">0</strong> lancers
+        </div>
+        <div class="chart-container"><canvas id="diceChart"></canvas></div>
+        <div class="reset-row">
+          <button class="btn-reset" onclick="resetDice()">
+            ↺ Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ MODAL : VECTEUR & MOUVEMENT ═══════ -->
+    <div class="overlay" id="vectorOverlay">
+      <div class="modal modal-wide">
+        <div class="modal-header">
+          <h2>➡️ Vecteur & Mouvement</h2>
+          <button class="modal-close" onclick="closeVectorModal()">
+            &times;
+          </button>
+        </div>
+        <div class="vector-controls">
+          <div class="vec-input-group">
+            <label>Position</label>
+            <div class="vec-inputs">
+              <div class="vec-field">
+                <span>x</span><input type="number" id="posX" value="250" />
+              </div>
+              <div class="vec-field">
+                <span>y</span><input type="number" id="posY" value="200" />
+              </div>
+            </div>
+          </div>
+          <div class="vec-input-group">
+            <label>Vélocité</label>
+            <div class="vec-inputs">
+              <div class="vec-field">
+                <span>vx</span
+                ><input type="number" id="velX" value="2" step="0.5" />
+              </div>
+              <div class="vec-field">
+                <span>vy</span
+                ><input type="number" id="velY" value="1.5" step="0.5" />
+              </div>
+            </div>
+          </div>
+          <div class="vec-actions">
+            <button class="btn btn-primary" onclick="startVector()">
+              ▶ Lancer
+            </button>
+            <button class="btn btn-outline" onclick="pauseVector()">
+              ⏸ Pause
+            </button>
+            <button class="btn-reset" onclick="resetVector()">↺ Reset</button>
+          </div>
+        </div>
+        <div class="vector-info">
+          <span
+            >Position : (<strong id="dispX">250</strong>,
+            <strong id="dispY">200</strong>)</span
+          >
+          <span
+            >Vélocité : (<strong id="dispVX">2</strong>,
+            <strong id="dispVY">1.5</strong>)</span
+          >
+        </div>
+        <canvas id="vectorCanvas" width="600" height="400"></canvas>
+      </div>
+    </div>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer>
+      MathLab © Enzo Moita 2026 — Semestre 2 · Cours de Mathématiques
+    </footer>
+
+    <!-- ═══════ SCRIPTS ═══════ -->
+    <script src="script.js"></script>
+  </body>
+</html>

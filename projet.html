@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Projet — Courbes paramétriques et polaires</title>
+    <!-- KaTeX pour les formules mathématiques -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- Three.js pour la 3D -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+        }
+      }
+    </script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="projet-style.css" />
+  </head>
+  <body>
+    <!-- ═══════ NAVBAR ═══════ -->
+    <nav>
+      <div class="nav-logo">Ω MathLab Ω</div>
+      <button class="burger" id="burger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="cours.html">Cours</a></li>
+        <li><a href="projet.html" class="active">Projets</a></li>
+      </ul>
+    </nav>
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero">
+      <h1>Courbes paramétriques & polaires</h1>
+      <p>
+        Géométrie et espace — explorez les courbes à travers des visualisations
+        interactives.
+      </p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         SECTION 1 — INTRODUCTION & VULGARISATION
+         ═══════════════════════════════════════════════ -->
+    <section class="container" id="intro">
+      <h2 class="section-title">
+        Introduction — Deux façons de repérer un point
+      </h2>
+
+      <div class="intro-grid">
+        <!-- Coordonnées cartésiennes -->
+        <div class="intro-card">
+          <h3>📐 Coordonnées cartésiennes</h3>
+          <p>
+            Le système classique : on repère un point avec
+            <strong>deux distances</strong>, une horizontale (<em>x</em>) et une
+            verticale (<em>y</em>), depuis l'origine.
+          </p>
+          <p class="intro-example">
+            Exemple : le point (3, 2) est à 3 vers la droite et 2 vers le haut.
+          </p>
+          <div class="formula" data-formula="P = (x,\; y)"></div>
+        </div>
+
+        <!-- Coordonnées polaires -->
+        <div class="intro-card">
+          <h3>🧭 Coordonnées polaires</h3>
+          <p>
+            On repère un point avec une
+            <strong>distance au centre</strong> (<em>r</em>) et un
+            <strong>angle</strong> (<em>θ</em>) depuis l'axe horizontal.
+          </p>
+          <p class="intro-example">
+            Exemple : le point (3, π/4) est à 3 unités du centre, à 45°.
+          </p>
+          <div class="formula" data-formula="P = (r,\; \theta)"></div>
+        </div>
+      </div>
+
+      <!-- Schéma comparatif côte à côte -->
+      <div class="compare-schemas">
+        <canvas id="schemaCartesian" width="300" height="300"></canvas>
+        <canvas id="schemaPolar" width="300" height="300"></canvas>
+      </div>
+
+      <!-- Conversion -->
+      <div class="intro-block">
+        <h3>🔄 Conversion entre les deux systèmes</h3>
+        <div class="formula-row">
+          <div class="formula" data-formula="x = r \cos\theta"></div>
+          <div class="formula" data-formula="y = r \sin\theta"></div>
+          <div class="formula" data-formula="r = \sqrt{x^2 + y^2}"></div>
+          <div
+            class="formula"
+            data-formula="\theta = \arctan\!\left(\frac{y}{x}\right)"></div>
+        </div>
+      </div>
+
+      <!-- Courbe paramétrique -->
+      <div class="intro-block">
+        <h3>🎯 Qu'est-ce qu'une courbe paramétrique ?</h3>
+        <p>
+          Imaginez un point qui <strong>se balade</strong> dans le plan (ou
+          l'espace) selon des équations qui dépendent d'un paramètre
+          <em>t</em> (souvent le temps). À chaque instant <em>t</em>, on calcule
+          la position du point :
+        </p>
+        <div class="formula-row">
+          <div
+            class="formula"
+            data-formula="\begin{cases} x(t) = f(t) \\ y(t) = g(t) \end{cases}"></div>
+        </div>
+        <p>
+          En <strong>coordonnées polaires</strong>, on décrit la courbe par la
+          distance au centre en fonction de l'angle :
+        </p>
+        <div class="formula-row">
+          <div class="formula" data-formula="r(\theta) = h(\theta)"></div>
+        </div>
+        <p class="intro-highlight">
+          C'est ce qui crée les rosaces, spirales, cardioïdes et toutes les
+          belles courbes que vous allez explorer ci-dessous !
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         SECTION 2 — GRAPHEUR 2D INTERACTIF
+         ═══════════════════════════════════════════════ -->
+    <section class="container" id="grapheur2d">
+      <h2 class="section-title">Grapheur 2D interactif</h2>
+
+      <div class="graph-panel">
+        <!-- Contrôles -->
+        <div class="graph-controls">
+          <div class="control-group">
+            <label for="curve2dSelect">Courbe</label>
+            <select id="curve2dSelect" class="styled-select">
+              <option value="rosace">Rosace : r(θ) = a·cos(bθ)</option>
+              <option value="cardioide">
+                Cardioïde : r(θ) = a·(1 + cos θ)
+              </option>
+              <option value="spirale">Spirale d'Archimède : r(θ) = a·θ</option>
+              <option value="lissajous">
+                Lissajous : x=sin(at), y=cos(bt)
+              </option>
+              <option value="custom_polar">✏️ Custom polaire r(θ)</option>
+              <option value="custom_param">
+                ✏️ Custom paramétrique x(t), y(t)
+              </option>
+            </select>
+          </div>
+
+          <!-- Sliders a/b (courbes prédéfinies) -->
+          <div id="presetSliders2d">
+            <div class="control-group">
+              <label for="slider2dA"
+                >Paramètre a : <span id="val2dA">3</span></label
+              >
+              <input
+                type="range"
+                id="slider2dA"
+                class="styled-range"
+                min="0.5"
+                max="8"
+                step="0.1"
+                value="3" />
+            </div>
+            <div class="control-group">
+              <label for="slider2dB"
+                >Paramètre b : <span id="val2dB">5</span></label
+              >
+              <input
+                type="range"
+                id="slider2dB"
+                class="styled-range"
+                min="1"
+                max="12"
+                step="1"
+                value="5" />
+            </div>
+          </div>
+
+          <!-- ── Éditeur d'équation custom (polaire) ── -->
+          <div
+            id="customPolarInputs"
+            class="custom-inputs"
+            style="display: none">
+            <div class="control-group">
+              <label for="inputPolarR">r(θ) =</label>
+              <input
+                type="text"
+                id="inputPolarR"
+                class="styled-input"
+                placeholder="ex: 3*cos(5*theta)"
+                spellcheck="false" />
+              <div class="eq-error" id="errorPolarR"></div>
+            </div>
+            <div class="example-chips" id="polarChips">
+              <button data-expr="3*cos(5*theta)">3cos(5θ)</button>
+              <button data-expr="2+sin(3*theta)">2+sin(3θ)</button>
+              <button data-expr="theta/2">θ/2</button>
+              <button data-expr="cos(theta)^2+sin(3*theta)">
+                cos²θ+sin(3θ)
+              </button>
+            </div>
+            <div class="control-group">
+              <label>Plage θ : 0 → <span id="valThetaRange">2π</span></label>
+              <input
+                type="range"
+                id="sliderThetaRange"
+                class="styled-range"
+                min="1"
+                max="8"
+                step="1"
+                value="2" />
+            </div>
+          </div>
+
+          <!-- ── Éditeur d'équation custom (paramétrique) ── -->
+          <div
+            id="customParamInputs"
+            class="custom-inputs"
+            style="display: none">
+            <div class="control-group">
+              <label for="inputParamX">x(t) =</label>
+              <input
+                type="text"
+                id="inputParamX"
+                class="styled-input"
+                placeholder="ex: sin(3*t)+cos(5*t)"
+                spellcheck="false" />
+              <div class="eq-error" id="errorParamX"></div>
+            </div>
+            <div class="control-group">
+              <label for="inputParamY">y(t) =</label>
+              <input
+                type="text"
+                id="inputParamY"
+                class="styled-input"
+                placeholder="ex: cos(2*t)-sin(t)"
+                spellcheck="false" />
+              <div class="eq-error" id="errorParamY"></div>
+            </div>
+            <div class="example-chips" id="paramChips">
+              <button data-x="sin(3*t)+cos(5*t)" data-y="cos(2*t)-sin(t)">
+                Lissajous complexe
+              </button>
+              <button data-x="cos(t)*(1+cos(t)/2)" data-y="sin(t)*(1+cos(t)/2)">
+                Cardioïde param.
+              </button>
+              <button data-x="sin(2*t)*cos(t)" data-y="sin(2*t)*sin(t)">
+                Trèfle
+              </button>
+            </div>
+            <div class="control-group">
+              <label>Plage t : 0 → <span id="valParamRange">2π</span></label>
+              <input
+                type="range"
+                id="sliderParamRange"
+                class="styled-range"
+                min="1"
+                max="6"
+                step="1"
+                value="2" />
+            </div>
+          </div>
+
+          <!-- Bouton galerie presets -->
+          <button
+            class="btn btn-ghost"
+            id="btnOpenGallery"
+            style="display: none">
+            🎨 Galerie de presets
+          </button>
+
+          <!-- Séparateur -->
+          <hr class="control-sep" />
+
+          <!-- ── Traînée lumineuse ── -->
+          <div class="control-group">
+            <label>Traînée lumineuse</label>
+            <div class="trail-modes">
+              <button class="trail-btn active" data-trail="0">Off</button>
+              <button class="trail-btn" data-trail="30">Courte</button>
+              <button class="trail-btn" data-trail="60">Moyenne</button>
+              <button class="trail-btn" data-trail="100">Longue</button>
+            </div>
+          </div>
+
+          <!-- ── Vecteurs vitesse / accélération ── -->
+          <div class="control-group">
+            <label>Vecteurs</label>
+            <div class="toggle-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="chkVelocity" />
+                <span class="toggle-dot" style="--dot-color: #00cfc8"></span>
+                Vitesse
+              </label>
+              <label class="toggle-label">
+                <input type="checkbox" id="chkAcceleration" />
+                <span class="toggle-dot" style="--dot-color: #f07c5a"></span>
+                Accélération
+              </label>
+            </div>
+          </div>
+
+          <div class="control-actions">
+            <button class="btn btn-primary" id="btn2dAnimate">▶ Animer</button>
+            <button class="btn btn-outline" id="btn2dReset">↺ Reset</button>
+          </div>
+
+          <!-- Équation affichée -->
+          <div class="equation-display" id="equation2d"></div>
+
+          <!-- ── Panneau infos temps réel ── -->
+          <div class="info-panel" id="infoPanel2d" style="display: none">
+            <div class="info-row">
+              <span class="info-label">Position</span
+              ><span class="info-value" id="infoPos">(0, 0)</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Vitesse ‖v‖</span
+              ><span class="info-value" id="infoSpeed">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Accélération ‖a‖</span
+              ><span class="info-value" id="infoAccel">0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Courbure κ</span
+              ><span class="info-value" id="infoCurv">0</span>
+            </div>
+          </div>
+
+          <!-- ── Export / Partage ── -->
+          <hr class="control-sep" />
+          <div class="control-actions">
+            <button class="btn btn-ghost" id="btnExport2d">
+              📷 Export PNG
+            </button>
+            <button class="btn btn-ghost" id="btnShare2d">🔗 Partager</button>
+          </div>
+          <div class="share-feedback" id="shareFeedback2d"></div>
+        </div>
+
+        <!-- Canvas 2D -->
+        <div class="canvas-wrapper">
+          <canvas id="canvas2d"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         GALERIE DE PRESETS (modal)
+         ═══════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="galleryModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Galerie de presets</h3>
+          <button class="modal-close" id="btnCloseGallery">&times;</button>
+        </div>
+        <div class="gallery-tabs">
+          <button class="gallery-tab active" data-cat="classiques">
+            Classiques
+          </button>
+          <button class="gallery-tab" data-cat="complexes">Complexes</button>
+          <button class="gallery-tab" data-cat="artistiques">
+            Artistiques
+          </button>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         SECTION 3 — VISUALISATION 3D
+         ═══════════════════════════════════════════════ -->
+    <section class="container" id="grapheur3d">
+      <h2 class="section-title">Visualisation 3D</h2>
+
+      <div class="graph-panel">
+        <!-- Contrôles -->
+        <div class="graph-controls">
+          <div class="control-group">
+            <label for="curve3dSelect">Courbe 3D</label>
+            <select id="curve3dSelect" class="styled-select">
+              <option value="helice">Hélice : x=cos(t), y=t, z=sin(t)</option>
+              <option value="torique">Nœud torique</option>
+              <option value="lissajous3d">Lissajous 3D</option>
+              <option value="ressort">Ressort conique</option>
+              <option value="spirale_sphere">Spirale sphérique</option>
+              <option value="custom_3d">✏️ Custom 3D x(t), y(t), z(t)</option>
+            </select>
+          </div>
+
+          <!-- Sliders 3D (courbes prédéfinies) -->
+          <div id="presetSliders3d">
+            <div class="control-group">
+              <label for="slider3dA"
+                >Paramètre a : <span id="val3dA">2</span></label
+              >
+              <input
+                type="range"
+                id="slider3dA"
+                class="styled-range"
+                min="1"
+                max="10"
+                step="0.5"
+                value="2" />
+            </div>
+            <div class="control-group">
+              <label for="slider3dB"
+                >Paramètre b : <span id="val3dB">3</span></label
+              >
+              <input
+                type="range"
+                id="slider3dB"
+                class="styled-range"
+                min="1"
+                max="10"
+                step="0.5"
+                value="3" />
+            </div>
+            <div class="control-group">
+              <label for="slider3dC"
+                >Paramètre c : <span id="val3dC">2</span></label
+              >
+              <input
+                type="range"
+                id="slider3dC"
+                class="styled-range"
+                min="1"
+                max="10"
+                step="0.5"
+                value="2" />
+            </div>
+          </div>
+
+          <!-- ── Éditeur custom 3D ── -->
+          <div id="custom3dInputs" class="custom-inputs" style="display: none">
+            <div class="control-group">
+              <label for="input3dX">x(t) =</label>
+              <input
+                type="text"
+                id="input3dX"
+                class="styled-input"
+                placeholder="ex: cos(3*t)"
+                spellcheck="false" />
+              <div class="eq-error" id="error3dX"></div>
+            </div>
+            <div class="control-group">
+              <label for="input3dY">y(t) =</label>
+              <input
+                type="text"
+                id="input3dY"
+                class="styled-input"
+                placeholder="ex: sin(2*t)"
+                spellcheck="false" />
+              <div class="eq-error" id="error3dY"></div>
+            </div>
+            <div class="control-group">
+              <label for="input3dZ">z(t) =</label>
+              <input
+                type="text"
+                id="input3dZ"
+                class="styled-input"
+                placeholder="ex: t/5"
+                spellcheck="false" />
+              <div class="eq-error" id="error3dZ"></div>
+            </div>
+            <div class="example-chips" id="chips3d">
+              <button data-x="cos(3*t)" data-y="sin(2*t)" data-z="t/5">
+                Lissajous 3D
+              </button>
+              <button
+                data-x="(2+cos(3*t))*cos(2*t)"
+                data-y="(2+cos(3*t))*sin(2*t)"
+                data-z="sin(3*t)">
+                Nœud torique
+              </button>
+              <button
+                data-x="cos(t)*sin(10*t)"
+                data-y="sin(t)*sin(10*t)"
+                data-z="cos(10*t)">
+                Spirale sphérique
+              </button>
+            </div>
+            <div class="control-group">
+              <label>Plage t : 0 → <span id="val3dTRange">2π</span></label>
+              <input
+                type="range"
+                id="slider3dTRange"
+                class="styled-range"
+                min="1"
+                max="8"
+                step="1"
+                value="2" />
+            </div>
+          </div>
+
+          <div class="control-actions">
+            <button class="btn btn-primary" id="btn3dAnimate">▶ Animer</button>
+            <button class="btn btn-outline" id="btn3dReset">↺ Reset</button>
+          </div>
+
+          <!-- Équation affichée -->
+          <div class="equation-display" id="equation3d"></div>
+
+          <hr class="control-sep" />
+          <div class="control-actions">
+            <button class="btn btn-ghost" id="btnExport3d">
+              📷 Export PNG
+            </button>
+          </div>
+        </div>
+
+        <!-- Scène 3D -->
+        <div class="canvas-wrapper" id="three-container"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         SECTION 4 — COMPARATEUR CÔTE À CÔTE
+         ═══════════════════════════════════════════════ -->
+    <section class="container" id="comparateur">
+      <h2 class="section-title">Comparateur côte à côte</h2>
+      <div class="compare-toolbar">
+        <label class="toggle-label">
+          <input type="checkbox" id="chkSyncCompare" checked />
+          <span class="toggle-dot" style="--dot-color: #6c63ff"></span>
+          Animation synchronisée
+        </label>
+        <button class="btn btn-ghost" id="btnCopyLeftToRight">
+          Copier gauche → droite
+        </button>
+        <button class="btn btn-ghost" id="btnCopyRightToLeft">
+          Copier droite → gauche
+        </button>
+      </div>
+      <div class="compare-grid">
+        <!-- Côté gauche -->
+        <div class="compare-side" id="compareLeft">
+          <div class="compare-controls">
+            <select id="cmpLeftSelect" class="styled-select">
+              <option value="rosace">Rosace</option>
+              <option value="cardioide">Cardioïde</option>
+              <option value="spirale">Spirale</option>
+              <option value="lissajous">Lissajous</option>
+              <option value="custom_polar">Custom polaire</option>
+              <option value="custom_param">Custom param.</option>
+            </select>
+            <div class="cmp-sliders">
+              <label>a: <span class="cmp-val-a">3</span></label>
+              <input
+                type="range"
+                class="styled-range cmp-slider-a"
+                min="0.5"
+                max="8"
+                step="0.1"
+                value="3" />
+              <label>b: <span class="cmp-val-b">3</span></label>
+              <input
+                type="range"
+                class="styled-range cmp-slider-b"
+                min="1"
+                max="12"
+                step="1"
+                value="3" />
+            </div>
+            <div class="cmp-custom" style="display: none">
+              <input
+                type="text"
+                class="styled-input cmp-expr"
+                placeholder="r(θ) ou x(t)"
+                spellcheck="false" />
+              <input
+                type="text"
+                class="styled-input cmp-expr2"
+                placeholder="y(t) (param.)"
+                spellcheck="false"
+                style="display: none" />
+            </div>
+          </div>
+          <div class="canvas-wrapper compare-canvas-wrap">
+            <canvas class="compare-canvas" id="cmpCanvasLeft"></canvas>
+          </div>
+        </div>
+        <!-- Côté droit -->
+        <div class="compare-side" id="compareRight">
+          <div class="compare-controls">
+            <select id="cmpRightSelect" class="styled-select">
+              <option value="rosace" selected>Rosace</option>
+              <option value="cardioide">Cardioïde</option>
+              <option value="spirale">Spirale</option>
+              <option value="lissajous">Lissajous</option>
+              <option value="custom_polar">Custom polaire</option>
+              <option value="custom_param">Custom param.</option>
+            </select>
+            <div class="cmp-sliders">
+              <label>a: <span class="cmp-val-a">3</span></label>
+              <input
+                type="range"
+                class="styled-range cmp-slider-a"
+                min="0.5"
+                max="8"
+                step="0.1"
+                value="3" />
+              <label>b: <span class="cmp-val-b">5</span></label>
+              <input
+                type="range"
+                class="styled-range cmp-slider-b"
+                min="1"
+                max="12"
+                step="1"
+                value="5" />
+            </div>
+            <div class="cmp-custom" style="display: none">
+              <input
+                type="text"
+                class="styled-input cmp-expr"
+                placeholder="r(θ) ou x(t)"
+                spellcheck="false" />
+              <input
+                type="text"
+                class="styled-input cmp-expr2"
+                placeholder="y(t) (param.)"
+                spellcheck="false"
+                style="display: none" />
+            </div>
+          </div>
+          <div class="canvas-wrapper compare-canvas-wrap">
+            <canvas class="compare-canvas" id="cmpCanvasRight"></canvas>
+          </div>
+        </div>
+      </div>
+      <div
+        class="control-actions"
+        style="justify-content: center; margin-top: 0.8rem">
+        <button class="btn btn-primary" id="btnCompareAnimate">▶ Animer</button>
+        <button class="btn btn-outline" id="btnCompareReset">↺ Reset</button>
+      </div>
+    </section>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer>
+      MathLab © Enzo Moita 2026 — Semestre 2 · Cours de Mathématiques
+    </footer>
+
+    <!-- ═══════ SCRIPTS ═══════ -->
+    <!-- math.js pour parsing sécurisé des expressions utilisateurs -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/dist/math.min.js"></script>
+    <script src="projet-script.js" type="module"></script>
+  </body>
+</html>
