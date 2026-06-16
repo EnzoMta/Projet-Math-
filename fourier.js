@@ -254,8 +254,10 @@
       updateCountDisplay();
       if (fourierData.length > 0) {
         path = [];
-        time = 0;
-        if (!playing) drawStatic();
+        if (!playing) {
+          time = 0;
+          drawStatic();
+        }
       }
     });
   }

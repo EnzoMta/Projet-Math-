@@ -104,30 +104,46 @@
         </div>
       </div>
 
-      <!-- Courbe paramétrique -->
+      <!-- Courbes paramétriques -->
       <div class="intro-block">
-        <h3>🎯 Qu'est-ce qu'une courbe paramétrique ?</h3>
+        <h3>🐜 C'est quoi une courbe paramétrique ?</h3>
         <p>
-          Imaginez un point qui <strong>se balade</strong> dans le plan (ou
-          l'espace) selon des équations qui dépendent d'un paramètre
-          <em>t</em> (souvent le temps). À chaque instant <em>t</em>, on calcule
-          la position du point :
+          Imaginez une fourmi qui se promène sur une feuille. À chaque seconde,
+          elle a une position différente. Si on note le temps <em>t</em>, on peut écrire :
+        </p>
+        <p class="intro-step">➡️ Sa position horizontale <em>x</em> dépend du temps : <strong>x = f(t)</strong></p>
+        <p class="intro-step">⬆️ Sa position verticale <em>y</em> dépend du temps : <strong>y = g(t)</strong></p>
+        <p>
+          En reliant tous les points par lesquels elle passe, on obtient une courbe.
+          C'est ça une courbe paramétrique : <strong>le chemin d'un point qui bouge selon des équations.</strong>
         </p>
         <div class="formula-row">
-          <div
-            class="formula"
-            data-formula="\begin{cases} x(t) = f(t) \\ y(t) = g(t) \end{cases}"></div>
-        </div>
-        <p>
-          En <strong>coordonnées polaires</strong>, on décrit la courbe par la
-          distance au centre en fonction de l'angle :
-        </p>
-        <div class="formula-row">
-          <div class="formula" data-formula="r(\theta) = h(\theta)"></div>
+          <div class="formula" data-formula="x(t) = \sin(3t)"></div>
+          <div class="formula" data-formula="y(t) = \cos(2t)"></div>
         </div>
         <p class="intro-highlight">
-          C'est ce qui crée les rosaces, spirales, cardioïdes et toutes les
-          belles courbes que vous allez explorer ci-dessous !
+          🐜 La fourmi ne choisit pas son chemin au hasard : ses équations sont son « programme de marche ».
+          Changez les équations et elle dessine une forme complètement différente !
+        </p>
+      </div>
+
+      <!-- Courbes polaires -->
+      <div class="intro-block">
+        <h3>🌸 C'est quoi une courbe polaire ?</h3>
+        <p>
+          Au lieu de dire « le point est à <em>x</em> mètres à droite et <em>y</em> mètres en haut »,
+          on dit « <strong>tourne de tel angle θ, puis avance de r mètres</strong> ».
+          Si la distance <em>r</em> change selon l'angle <em>θ</em>, on obtient une courbe polaire.
+        </p>
+        <div class="formula-row">
+          <div class="formula" data-formula="r(\theta) = a \times \cos(b \times \theta)"></div>
+        </div>
+        <p>
+          Avec cette simple formule, en faisant varier l'angle de 0° à 360°,
+          on obtient une <strong>rosace</strong> ! Le nombre de pétales dépend du paramètre <em>b</em>.
+        </p>
+        <p class="intro-highlight">
+          🌸 C'est comme un spirographe : une règle simple qui, en tournant, crée des motifs complexes et magnifiques.
         </p>
       </div>
     </section>
