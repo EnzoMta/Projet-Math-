@@ -774,12 +774,16 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.2rem 1.4rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .app-card:hover {
   border-color: var(--accent);
   box-shadow: 0 4px 20px rgba(99, 179, 237, 0.1);
+  transform: translateY(-2px);
 }
 
 .app-icon {
